@@ -24,7 +24,7 @@ function setup()
     gameChar_y = floorPos_y;
     gameChar_width = 50;
     
-    //initialise the valur of these function to false
+    //initialise the value of these function to false
     isLeft = false;
     isRight = false;
     isFalling = false;
@@ -35,7 +35,7 @@ function setup()
     setupTrees();
     setupCollectables();
 
-    //canyon = {x_pos: 500, width: 150};
+    canyon = {x_pos: 900, width: 120};
     
 }
 
@@ -44,9 +44,9 @@ function draw()
     //fill the sky and backgrond blue
     background(255,204,128);
 
+    //draw the soil floor
     noStroke();
     fill(76,40,62);
-    //draw the soil floor
     rect(0, floorPos_y, width, height - floorPos_y );
 
     //draw the floor
@@ -66,45 +66,109 @@ function draw()
     drawTrees();
 
     //draw the canyon
-    //drawCanyon();
+    drawCanyon();
 
     //draw the collectable
     checkIfAnyCollectable();
     drawCollectable();
     
     //check if game character is over the canyon
-    //ifCharOverTheCanyon();
+    charOverCanyon();
 
     //game character
     if(isLeft && isFalling)
     {
-        //jumping left 
-        gameCharIsLeftAndJump();
+        //jumping left
+        stroke(100);
+        fill(255,228,196);
+	    ellipse(gameChar_x + 5, gameChar_y - 60, 20, 20); //head
+        fill(0,0,0);
+        ellipse(gameChar_x - 9, gameChar_y - 65, 5, 5) //left eye
+        ellipse(gameChar_x - 12, gameChar_y - 58, 6, 6) //mouth
+        fill(255,228,196);
+        ellipse(gameChar_x + 4, gameChar_y - 35, 35, 40) //body
+        ellipse(gameChar_x - 3, gameChar_y - 55, 10, 30) //left arm
+        fill(255,0,0);
+	    ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
     else if(isRight && isFalling)
     {
-        //jumping right 
-        gameCharIsRightAndJump();
+        //jumping right
+        stroke(100); 
+        fill(255,228,196);
+	    ellipse(gameChar_x + 5, gameChar_y - 60, 20, 20); //head
+	    fill(0,0,0);
+	    ellipse(gameChar_x + 9, gameChar_y - 65, 5, 5); //right eye
+	    ellipse(gameChar_x + 12, gameChar_y - 58, 6, 6); //mouth
+	    fill(255,228,196);
+	    ellipse(gameChar_x + 5, gameChar_y - 35, 35, 40) //body
+	    ellipse(gameChar_x + 3, gameChar_y - 55, 10,30); //right arm
+        fill(255,0,0);
+	    ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
     else if(isLeft)
     {
         //walking left
-        gameCharIsLeft();
+        stroke(100);
+        fill(255,228,196);
+	    ellipse(gameChar_x + 10, gameChar_y - 60, 20, 20); //head
+	    fill(0,0,0);
+	    ellipse(gameChar_x + 6, gameChar_y - 65, 5, 5); //eye
+	    line(gameChar_x, gameChar_y - 57, gameChar_x + 6, gameChar_y - 58); //mouth
+	    fill(255,228,196);
+	    ellipse(gameChar_x + 10, gameChar_y - 33, 25, 40); //body
+	    ellipse(gameChar_x + 10, gameChar_y -30, 10,30); //left arm
+        fill(255,0,0);
+	    ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
     else if(isRight)
     {
         //walking right
-        gameCharIsRight();
+        stroke(100);
+        fill(255,228,196);
+        ellipse(gameChar_x - 10, gameChar_y - 60, 20, 20); //head
+        fill(0,0,0);
+        ellipse(gameChar_x - 6, gameChar_y - 65, 5, 5); //right eye
+        line(gameChar_x - 1, gameChar_y - 57, gameChar_x - 7, gameChar_y - 58); //mouth
+        fill(255,228,196);
+        ellipse(gameChar_x - 10, gameChar_y - 33, 25, 40) //body
+        ellipse(gameChar_x - 10, gameChar_y - 30, 10,30); //right arm
+        fill(255,0,0);
+	    ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
     else if(isFalling || isPlummeting)
     {
         //character jumps
-        gameCharIsJump();
+        stroke(100);
+        fill(255,228,196);
+	    ellipse(gameChar_x, gameChar_y - 70, 20, 20); //head
+	    fill(0,0,0);
+	    ellipse(gameChar_x - 6, gameChar_y - 73, 5, 5); //left eye
+	    ellipse(gameChar_x + 6, gameChar_y - 73, 5, 5); //right eye
+	    ellipse(gameChar_x, gameChar_y - 68, 6, 6); //mouth
+	    fill(255,228,196);
+	    ellipse(gameChar_x, gameChar_y - 45, 35, 40); //body
+	    ellipse(gameChar_x - 16, gameChar_y - 65, 10, 30); //left arm
+	    ellipse(gameChar_x + 16, gameChar_y - 65, 10,30); //right arm
+        fill(255,0,0);
+	    ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
     else 
     {
         //character idle
-        gameCharIsIdle();
+        stroke(100);
+        fill(255,228,196);
+	    ellipse(gameChar_x, gameChar_y - 60, 25,25); //head
+	    fill(0,0,0);
+	    ellipse(gameChar_x - 8, gameChar_y - 64, 5, 5); //left eye
+	    ellipse(gameChar_x + 8, gameChar_y - 64, 5, 5); //right eye
+	    line(gameChar_x - 5, gameChar_y - 60, gameChar_x + 5, gameChar_y - 57); //mouth
+	    fill(255,228,196);
+	    ellipse(gameChar_x, gameChar_y - 33, 35, 35); //body
+	    ellipse(gameChar_x - 16, gameChar_y - 30, 10, 30); //left arm
+	    ellipse(gameChar_x + 16, gameChar_y - 30, 10,30); //right arm
+        fill(255,0,0);
+	    ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
 
     /////INTERACTION CODE/////
@@ -139,36 +203,33 @@ function windowResized()
     resizeCanvas(windowWidth,windowHeight);
 }
 
-// function drawCanyon()
-// {
-//     fill(0,0,0);
-//     rect(canyon.x_pos,floorPos_y,canyon.width,height-floorPos_y);
-//     fill(255,0,0);
-//     ellipse(canyon.x_pos,floorPos_y,10,10);
-// }
+function drawCanyon()
+{
+    fill(47,32,0,300);
+    rect(canyon.x_pos,floorPos_y,canyon.width,height-floorPos_y);
+    fill(255,0,0);
+    ellipse(canyon.x_pos,floorPos_y,10,10);
+}
 
 //check if the character is over the canyon
-function ifCharOverTheCanyon()
-{
+function charOverCanyon() {
     //check if the game character on the floor
     var con1 = gameChar_y == floorPos_y
     //check if the game character is from the left of the canyon
     var con2 = gameChar_x - gameChar_width/2>(canyon.x_pos);
     //check if the game character is from the right of the canyon 
     var con3 = gameChar_x + gameChar_width/2<(canyon.x_pos + canyon.width);
-}
+
 
     //check if game character over the canyon
-    if(con1 && con2 && con3)
-    {
+    if(con1 && con2 && con3) {
         isPlummeting = true;
     }
+}
 
 //function for collectables
-function setupCollectables()
-{
-    collectables =
-    [
+function setupCollectables() {
+    collectables = [
         {pos_x: 200, pos_y:floorPos_y - 25, size: 50, isFound: false},
         {pos_x: 500, pos_y:floorPos_y - 25, size: 50, isFound: false},
         {pos_x: 800, pos_y:floorPos_y - 25, size: 50, isFound: false}
@@ -176,36 +237,31 @@ function setupCollectables()
 } 
 
 //check if the character is in range of the collectable
-function ifCharInCollectableRange(collectables)
-{
+function ifCharInCollectableRange(collectables) {
     var d = dist(gameChar_x,gameChar_y,collectables.pos_x,collectables.pos_y);
-    if (d < 30)
-    {
+    if (d < 30) {
         collectables.isFound = true;
     }
 }
 
 //check if any collectable near the character
-function checkIfAnyCollectable()
-{
-    for(var i=0;i<collectables.length;i++)
-    {
+function checkIfAnyCollectable() {
+    for(var i=0;i<collectables.length;i++) {
         ifCharInCollectableRange(collectables[i])
     }
 }
 
 //call the drawCollectable function
-function drawCollectable()
-{
-    for(var i=0;i<collectables.length;i++)
-    {  
-        if (collectables[i].isFound == false)
-        {
+function drawCollectable() {
+    for(var i=0;i<collectables.length;i++) {  
+        if (collectables[i].isFound == false) {
             fill(255,215,0);
-            ellipse(collectables[i].pos_x,
+            ellipse(
+                    collectables[i].pos_x,
                     collectables[i].pos_y,
                     collectables[i].size,
-                    collectables[i].size);
+                    collectables[i].size
+                    );
             fill(255,0,0);
             ellipse(collectables[i].pos_x,collectables[i].pos_y,10,10);
         }
@@ -215,8 +271,7 @@ function drawCollectable()
 //setup clouds
 function setupClouds()
 {
-    clouds=
-    [
+    clouds= [
         {pos_x:random(20,width),pos_y:random(50,100),size:random(50,90)}, 
         {pos_x:random(15,width),pos_y:random(100,250),size:random(50,90)},
         {pos_x:random(10,width),pos_y:random(200,300),size:random(50,90)},
@@ -226,18 +281,17 @@ function setupClouds()
 }
 
 //animate the clouds accross the canvas
-function animateClouds()
-{
-    for (var i=0;i<clouds.length;i++)
-    {
-        clouds[i].pos_x += 1;
+function animateClouds() {
+    for (var i=0;i<clouds.length;i++) {
+        if (clouds[i].pos_x > windowWidth)
+			clouds[i].pos_x = random(10, windowWidth / 4);
+		clouds[i].pos_x += random(1, 3);
         drawClouds(clouds[i]);
     }
 }
 
 //call the drawclouds function
-function drawClouds(cloudy)
-{
+function drawClouds(cloudy) {
     fill(255);
     ellipse(cloudy.pos_x,cloudy.pos_y,cloudy.size*1.5,cloudy.size*1.5)
     ellipse(cloudy.pos_x - 40,cloudy.pos_y,cloudy.size,cloudy.size)
@@ -273,12 +327,14 @@ function drawTrees()
         rectMode(CORNER);
         //tree leaves
         fill(231,157,34)
-        triangle(trees[i].pos_x - 80,
-                 trees[i].pos_y - 50,
-                 trees[i].pos_x,
-                 trees[i].pos_y - 150,
-                 trees[i].pos_x + 80,
-                 trees[i].pos_y - 50)
+        triangle(
+                trees[i].pos_x - 80,
+                trees[i].pos_y - 50,
+                trees[i].pos_x,
+                trees[i].pos_y - 150,
+                trees[i].pos_x + 80,
+                trees[i].pos_y - 50
+                );
         fill(255,0,0);
         ellipse(trees[i].pos_x,trees[i].pos_y,10,10);
     }
