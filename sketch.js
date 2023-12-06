@@ -54,8 +54,7 @@ function draw()
     rect(0,floorPos_y - 80, width, height - floorPos_y );
 
     //draw the clouds
-    // drawClouds();
-    // animateClouds();
+    animateClouds();
 
     //draw the mountain
     drawMountains();
@@ -72,10 +71,7 @@ function draw()
     //draw the collectable
     checkIfAnyCollectable();
     drawCollectable();
-
-    //check if the game character is in the range  of the collectable 
-    ifCharInCollectableRange();
-
+    
     //check if game character is over the canyon
     //ifCharOverTheCanyon();
 
@@ -151,6 +147,7 @@ function windowResized()
 //     ellipse(canyon.x_pos,floorPos_y,10,10);
 // }
 
+//check if the character is over the canyon
 function ifCharOverTheCanyon()
 {
     //check if the game character on the floor
@@ -167,6 +164,7 @@ function ifCharOverTheCanyon()
         isPlummeting = true;
     }
 
+//function for collectables
 function setupCollectables()
 {
     collectables =
@@ -177,16 +175,17 @@ function setupCollectables()
     ]
 } 
 
-
-function ifCharInCollectableRange(collectable)
+//check if the character is in range of the collectable
+function ifCharInCollectableRange(collectables)
 {
-    var d = dist(gameChar_x,gameChar_y,collectable.pos_x,collectable.pos_y);
+    var d = dist(gameChar_x,gameChar_y,collectables.pos_x,collectables.pos_y);
     if (d < 30)
     {
-        collectable.isFound = true;
+        collectables.isFound = true;
     }
 }
 
+//check if any collectable near the character
 function checkIfAnyCollectable()
 {
     for(var i=0;i<collectables.length;i++)
@@ -195,6 +194,7 @@ function checkIfAnyCollectable()
     }
 }
 
+//call the drawCollectable function
 function drawCollectable()
 {
     for(var i=0;i<collectables.length;i++)
@@ -202,37 +202,40 @@ function drawCollectable()
         if (collectables[i].isFound == false)
         {
             fill(255,215,0);
-            //rectMode(CENTER);
             ellipse(collectables[i].pos_x,
                     collectables[i].pos_y,
                     collectables[i].size,
                     collectables[i].size);
-            //rectMode(CORNER);
             fill(255,0,0);
             ellipse(collectables[i].pos_x,collectables[i].pos_y,10,10);
         }
     }
 }
 
+//setup clouds
 function setupClouds()
 {
     clouds=
     [
         {pos_x:random(20,width),pos_y:random(50,100),size:random(50,90)}, 
         {pos_x:random(15,width),pos_y:random(100,250),size:random(50,90)},
+        {pos_x:random(10,width),pos_y:random(200,300),size:random(50,90)},
+        {pos_x:random(10,width),pos_y:random(200,300),size:random(50,90)},
         {pos_x:random(10,width),pos_y:random(200,300),size:random(50,90)}
     ]
 }
 
-// function animateClouds()
-// {
-//     for (var i=0;i<clouds.length;i++)
-//     {
-//         clouds[i].pos_x = clouds[i].pos_x + 1;
-//         drawClouds(clouds[i]);
-//     }
-// }
+//animate the clouds accross the canvas
+function animateClouds()
+{
+    for (var i=0;i<clouds.length;i++)
+    {
+        clouds[i].pos_x += 1;
+        drawClouds(clouds[i]);
+    }
+}
 
+//call the drawclouds function
 function drawClouds(cloudy)
 {
     fill(255);
@@ -243,6 +246,7 @@ function drawClouds(cloudy)
     ellipse(cloudy.pos_x,cloudy.pos_y,10,10);
 }
 
+//setup trees
 function setupTrees()
 {
     trees = 
@@ -256,6 +260,7 @@ function setupTrees()
     ]
 }
 
+//call the drawtrees function
 function drawTrees()
 {
     for (var i=0;i<trees.length;i++)
@@ -279,6 +284,7 @@ function drawTrees()
     }
 }
 
+//setup the hills
 function setupHills()
 {
     hills = 
@@ -290,6 +296,7 @@ function setupHills()
     ]
 }
 
+//call the drawhills function
 function drawHills()
 {
     for (var i=0;i<hills.length;i++)
@@ -304,6 +311,8 @@ function drawHills()
     }
 }
 
+
+//setup the mountains
 function setupMountains()
 {
     mountains = 
@@ -316,6 +325,7 @@ function setupMountains()
     ];
 }
 
+//call the drawMountains
 function drawMountains()
 {
     for(var i=0;i<mountains.length;i++)
@@ -333,7 +343,7 @@ function drawMountains()
     }
 }
 
-
+//keyboard function to control character
 function keyPressed()
 {
     if(keyCode == 37){
