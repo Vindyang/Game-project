@@ -185,25 +185,22 @@ function draw()
     pop();
 
     /////INTERACTION CODE/////
-    if(isPlummeting)
-    {
+    if(isPlummeting) {
         gameChar_y += 10;
         return;
     }
-    if(gameChar_y < floorPos_y)
-    {
+    if(gameChar_y < floorPos_y) {
         gameChar_y += 1;
         isFalling = true;
+
     } else {
-        ifFalling = false;
+        isFalling = false;
     }
 
-    if(isLeft == true)
-    {
+    if(isLeft == true) {
         gameChar_x -= 5;
-    }
-    else if(isRight == true)
-    {
+
+    } else if(isRight == true) {
         gameChar_x += 5;
     }
 
@@ -428,11 +425,13 @@ function keyPressed()
 {
     if(keyCode == 37){
         isLeft = true;
+
     } else if (keyCode == 39){
         isRight = true;
+
     } else if (keyCode == 38){
         if(gameChar_y >= floorPos_y)
-        gameChar_y -=50
+        gameChar_y -= 100
     }
 }
 
@@ -440,6 +439,7 @@ function keyReleased()
 {
     if(keyCode == 37){
         isLeft = false;
+        
     } else if (keyCode == 39){
         isRight = false;
     }
