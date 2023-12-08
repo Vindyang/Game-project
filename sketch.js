@@ -33,14 +33,52 @@ function setup()
     isPlummeting = false;
 
     //setup the properties of game background
-    setupClouds();
-    setupMountains();
-    setupHills();
-    setupTrees();
-    setupCollectables();
 
     canyon = {x_pos: 900, width: 120};
+
+    collectables = 
+    [
+        {pos_x: 200, pos_y:floorPos_y - 25, size: 50, isFound: false},
+        {pos_x: 500, pos_y:floorPos_y - 25, size: 50, isFound: false},
+        {pos_x: 970, pos_y:floorPos_y - 50, size: 50, isFound: false}
+    ]
     
+    clouds= [
+        {pos_x:random(20,width),pos_y:random(50,100),size:random(50,90)}, 
+        {pos_x:random(15,width),pos_y:random(100,250),size:random(50,90)},
+        {pos_x:random(10,width),pos_y:random(200,300),size:random(50,90)},
+        {pos_x:random(10,width),pos_y:random(200,300),size:random(50,90)},
+        {pos_x:random(10,width),pos_y:random(200,300),size:random(50,90)}
+    ]
+    
+    trees = 
+    [
+        {pos_x: 80,pos_y:floorPos_y - 50},
+        {pos_x: 200,pos_y:floorPos_y - 50},
+        {pos_x: 270,pos_y:floorPos_y - 50},
+        {pos_x: 500,pos_y:floorPos_y - 50},
+        {pos_x: 670,pos_y:floorPos_y - 50},
+        {pos_x: 770,pos_y:floorPos_y - 50},
+        {pos_x: 1230,pos_y:floorPos_y - 50},
+        {pos_x: 1350,pos_y:floorPos_y - 50}
+    ]
+
+    hills = 
+    [
+        {pos_x: 0, pos_y:floorPos_y,height: 370,width: 680},
+        {pos_x: 500,pos_y:floorPos_y,height: 400,width:700},
+        {pos_x: 1000,pos_y:floorPos_y,height: 360,width:700},
+        {pos_x: 1500,pos_y:floorPos_y,height: 250,width: 600 }
+    ]
+
+    mountains = 
+    [
+        {pos_x: 0,pos_y:floorPos_y - 200,height: 400,width: 600},
+        {pos_x: 450,pos_y:floorPos_y - 270,height: 540,width: 800},
+        {pos_x: 750,pos_y:floorPos_y - 275,height: 550,width: 400},
+        {pos_x: 1050,pos_y:floorPos_y - 250,height: 500,width: 650},
+        {pos_x: 1500,pos_y:floorPos_y - 265,height: 530,width: 600}  
+    ];
 }
 
 function draw()
@@ -56,39 +94,129 @@ function draw()
     fill(58, 77, 57)
     rect(0, floorPos_y, width, height - floorPos_y );
 
-    //draw the floor
-    // fill(177, 195, 129);
-    // rect(0,floorPos_y - 80, width, height - floorPos_y );
-
     //camera position
     push();
     translate(-cameraPos_x, 0);
 
     //draw the clouds
-    animateClouds();
+    for(var i=0;i<clouds.length;i++) {
+        fill(255);
+        ellipse(clouds[i].pos_x,clouds[i].pos_y,clouds[i].size*1.5,clouds[i].size*1.5)
+        ellipse(clouds[i].pos_x - 40,clouds[i].pos_y,clouds[i].size,clouds[i].size)
+        ellipse(clouds[i].pos_x + 40,clouds[i].pos_y,clouds[i].size,clouds[i].size)
+        // fill(255,0,0);
+        // ellipse(clouds.pos_x,clouds.pos_y,10,10);
+    }
+
+    //animate the clouds
+    for (var i=0;i<clouds.length;i++) {
+        if (clouds[i].pos_x > windowWidth)
+			clouds[i].pos_x = random(10, windowWidth / 4);
+		clouds[i].pos_x += random(1, 3);
+    }    
 
     //draw the mountain
-    drawMountains();
+    for(var i=0;i<mountains.length;i++) {
+        fill(255,235,216);
+        triangle(mountains[i].pos_x - mountains[i].width/2,
+                 mountains[i].pos_y + mountains[i].height/2,
+                 mountains[i].pos_x,
+                 mountains[i].pos_y - mountains[i].height/2,
+                 mountains[i].pos_x + mountains[i].width/2,
+                 mountains[i].pos_y + mountains[i].height/2
+                )
+        // fill(255,0,0);
+        // ellipse(mountains[i].pos_x,mountains[i].pos_y, 10, 10);
+    }
 
     //draw the hills
-    drawHills();
+    for (var i=0;i<hills.length;i++) {
+        fill(199,220,167);
+        arc(hills[i].pos_x,
+            hills[i].pos_y,
+            hills[i].width,
+            hills[i].height,
+            PI, radians(360)
+            )
+    }
 
     //draw the trees
-    drawTrees();
+    for (var i=0;i<trees.length;i++) {
+        noStroke();
+        //tree trunk
+        fill(185, 148, 112);
+        rectMode(CENTER);
+        rect(trees[i].pos_x,trees[i].pos_y,40,100);
+        rectMode(CORNER);
+        //tree leaves
+        fill(137,185,173)
+        triangle(
+                trees[i].pos_x - 80,
+                trees[i].pos_y - 50,
+                trees[i].pos_x,
+                trees[i].pos_y - 150,
+                trees[i].pos_x + 80,
+                trees[i].pos_y - 50
+                );
+        fill(137,185,173)
+        triangle(
+                trees[i].pos_x - 80,
+                trees[i].pos_y - 100,
+                trees[i].pos_x,
+                trees[i].pos_y - 240,
+                trees[i].pos_x + 80,
+                trees[i].pos_y - 100
+                );
+        //fill(255,0,0);
+        //ellipse(trees[i].pos_x,trees[i].pos_y,10,10);
+    }
 
     //draw the canyon
-    drawCanyon();
-
-    //draw the collectable
-    checkIfAnyCollectable();
-    drawCollectable();
+    fill(47,32,0,300);
+    rect(canyon.x_pos,floorPos_y,canyon.width,height-floorPos_y);
+    // fill(255,0,0);
+    // ellipse(canyon.x_pos,floorPos_y,10,10);
     
+    //draw the collectable
+    for(var i=0;i<collectables.length;i++) {  
+        if (collectables[i].isFound == false) {
+            fill(255,215,0);
+            ellipse(
+                    collectables[i].pos_x,
+                    collectables[i].pos_y,
+                    collectables[i].size,
+                    collectables[i].size
+                    );
+            // fill(255,0,0);
+            // ellipse(collectables[i].pos_x,collectables[i].pos_y,10,10);
+        }
+    }
+
+    //detect any collectable near the character
+    for(var i=0;i<collectables.length;i++) {
+        var collectable = collectables[i];
+        var d = dist(gameChar_x,gameChar_y,collectable.pos_x,collectable.pos_y);
+        if (d < 30) {
+            collectable.isFound = true;
+        }
+
+    }
+
     //check if game character is over the canyon
-    charOverCanyon();
+    var con1 = gameChar_y == floorPos_y
+    //check if the game character is from the left of the canyon
+    var con2 = gameChar_x - gameChar_width/2>(canyon.x_pos);
+    //check if the game character is from the right of the canyon 
+    var con3 = gameChar_x + gameChar_width/2<(canyon.x_pos + canyon.width);
+
+
+    //check if game character over the canyon
+    if(con1 && con2 && con3) {
+        isPlummeting = true;
+    }
 
     //game character
-    if(isLeft && isFalling)
-    {
+    if(isLeft && isFalling) {
         //jumping left
         stroke(100);
         fill(255,228,196);
@@ -102,8 +230,7 @@ function draw()
         // fill(255,0,0);
 	    // ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
-    else if(isRight && isFalling)
-    {
+    else if(isRight && isFalling) {
         //jumping right
         stroke(100); 
         fill(255,228,196);
@@ -117,8 +244,7 @@ function draw()
         // fill(255,0,0);
 	    // ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
-    else if(isLeft)
-    {
+    else if(isLeft) {
         //walking left
         stroke(100);
         fill(255,228,196);
@@ -132,8 +258,7 @@ function draw()
         // fill(255,0,0);
 	    // ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
-    else if(isRight)
-    {
+    else if(isRight) {
         //walking right
         stroke(100);
         fill(255,228,196);
@@ -147,8 +272,7 @@ function draw()
         // fill(255,0,0);
 	    // ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
-    else if(isFalling || isPlummeting)
-    {
+    else if(isFalling || isPlummeting) {
         //character jumps
         stroke(100);
         fill(255,228,196);
@@ -164,8 +288,7 @@ function draw()
         // fill(255,0,0);
 	    // ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
-    else 
-    {
+    else {
         //character idle
         stroke(100);
         fill(255,228,196);
@@ -208,221 +331,12 @@ function draw()
 }
 
 //resized when the window is resize
-function windowResized()
-{
+function windowResized() {
     resizeCanvas(windowWidth,windowHeight);
 }
 
-function drawCanyon()
-{
-    fill(47,32,0,300);
-    rect(canyon.x_pos,floorPos_y,canyon.width,height-floorPos_y);
-    // fill(255,0,0);
-    // ellipse(canyon.x_pos,floorPos_y,10,10);
-}
-
-//check if the character is over the canyon
-function charOverCanyon() {
-    //check if the game character on the floor
-    var con1 = gameChar_y == floorPos_y
-    //check if the game character is from the left of the canyon
-    var con2 = gameChar_x - gameChar_width/2>(canyon.x_pos);
-    //check if the game character is from the right of the canyon 
-    var con3 = gameChar_x + gameChar_width/2<(canyon.x_pos + canyon.width);
-
-
-    //check if game character over the canyon
-    if(con1 && con2 && con3) {
-        isPlummeting = true;
-    }
-}
-
-//function for collectables
-function setupCollectables() {
-    collectables = [
-        {pos_x: 200, pos_y:floorPos_y - 25, size: 50, isFound: false},
-        {pos_x: 500, pos_y:floorPos_y - 25, size: 50, isFound: false},
-        {pos_x: 970, pos_y:floorPos_y - 50, size: 50, isFound: false}
-    ]
-} 
-
-//check if the character is in range of the collectable
-function ifCharInCollectableRange(collectables) {
-    var d = dist(gameChar_x,gameChar_y,collectables.pos_x,collectables.pos_y);
-    if (d < 30) {
-        collectables.isFound = true;
-    }
-}
-
-//check if any collectable near the character
-function checkIfAnyCollectable() {
-    for(var i=0;i<collectables.length;i++) {
-        ifCharInCollectableRange(collectables[i])
-    }
-}
-
-//call the drawCollectable function
-function drawCollectable() {
-    for(var i=0;i<collectables.length;i++) {  
-        if (collectables[i].isFound == false) {
-            fill(255,215,0);
-            ellipse(
-                    collectables[i].pos_x,
-                    collectables[i].pos_y,
-                    collectables[i].size,
-                    collectables[i].size
-                    );
-            // fill(255,0,0);
-            // ellipse(collectables[i].pos_x,collectables[i].pos_y,10,10);
-        }
-    }
-}
-
-//setup clouds
-function setupClouds()
-{
-    clouds= [
-        {pos_x:random(20,width),pos_y:random(50,100),size:random(50,90)}, 
-        {pos_x:random(15,width),pos_y:random(100,250),size:random(50,90)},
-        {pos_x:random(10,width),pos_y:random(200,300),size:random(50,90)},
-        {pos_x:random(10,width),pos_y:random(200,300),size:random(50,90)},
-        {pos_x:random(10,width),pos_y:random(200,300),size:random(50,90)}
-    ]
-}
-
-//animate the clouds accross the canvas
-function animateClouds() {
-    for (var i=0;i<clouds.length;i++) {
-        if (clouds[i].pos_x > windowWidth)
-			clouds[i].pos_x = random(10, windowWidth / 4);
-		clouds[i].pos_x += random(1, 3);
-        drawClouds(clouds[i]);
-    }
-}
-
-//call the drawclouds function
-function drawClouds(cloudy) {
-    fill(255);
-    ellipse(cloudy.pos_x,cloudy.pos_y,cloudy.size*1.5,cloudy.size*1.5)
-    ellipse(cloudy.pos_x - 40,cloudy.pos_y,cloudy.size,cloudy.size)
-    ellipse(cloudy.pos_x + 40,cloudy.pos_y,cloudy.size,cloudy.size)
-    // fill(255,0,0);
-    // ellipse(cloudy.pos_x,cloudy.pos_y,10,10);
-}
-
-//setup trees
-function setupTrees()
-{
-    trees = 
-    [
-        {pos_x: 80,pos_y:floorPos_y - 50},
-        {pos_x: 200,pos_y:floorPos_y - 50},
-        {pos_x: 270,pos_y:floorPos_y - 50},
-        {pos_x: 500,pos_y:floorPos_y - 50},
-        {pos_x: 670,pos_y:floorPos_y - 50},
-        {pos_x: 770,pos_y:floorPos_y - 50},
-        {pos_x: 1230,pos_y:floorPos_y - 50},
-        {pos_x: 1350,pos_y:floorPos_y - 50}
-    ]
-}
-
-//call the drawtrees function
-function drawTrees()
-{
-    for (var i=0;i<trees.length;i++)
-    {
-        noStroke();
-        //tree trunk
-        fill(185, 148, 112);
-        rectMode(CENTER);
-        rect(trees[i].pos_x,trees[i].pos_y,40,100);
-        rectMode(CORNER);
-        //tree leaves
-        fill(137,185,173)
-        triangle(
-                trees[i].pos_x - 80,
-                trees[i].pos_y - 50,
-                trees[i].pos_x,
-                trees[i].pos_y - 150,
-                trees[i].pos_x + 80,
-                trees[i].pos_y - 50
-                );
-        fill(137,185,173)
-        triangle(
-                trees[i].pos_x - 80,
-                trees[i].pos_y - 100,
-                trees[i].pos_x,
-                trees[i].pos_y - 240,
-                trees[i].pos_x + 80,
-                trees[i].pos_y - 100
-                );
-        //fill(255,0,0);
-        //ellipse(trees[i].pos_x,trees[i].pos_y,10,10);
-    }
-}
-
-//setup the hills
-function setupHills()
-{
-    hills = 
-    [
-        {pos_x: 0, pos_y:floorPos_y,height: 370,width: 680},
-        {pos_x: 500,pos_y:floorPos_y,height: 400,width:700},
-        {pos_x: 1000,pos_y:floorPos_y,height: 360,width:700},
-        {pos_x: 1500,pos_y:floorPos_y,height: 250,width: 600 }
-    ]
-}
-
-//call the drawhills function
-function drawHills()
-{
-    for (var i=0;i<hills.length;i++)
-    {
-        fill(199,220,167);
-        arc(hills[i].pos_x,
-            hills[i].pos_y,
-            hills[i].width,
-            hills[i].height,
-            PI, radians(360)
-            )
-    }
-}
-
-
-//setup the mountains
-function setupMountains()
-{
-    mountains = 
-    [
-        {pos_x: 0,pos_y:floorPos_y - 200,height: 400,width: 600},
-        {pos_x: 450,pos_y:floorPos_y - 270,height: 540,width: 800},
-        {pos_x: 750,pos_y:floorPos_y - 275,height: 550,width: 400},
-        {pos_x: 1050,pos_y:floorPos_y - 250,height: 500,width: 650},
-        {pos_x: 1500,pos_y:floorPos_y - 265,height: 530,width: 600}  
-    ];
-}
-
-//call the drawMountains
-function drawMountains()
-{
-    for(var i=0;i<mountains.length;i++)
-    {
-        fill(255,235,216);
-        triangle(mountains[i].pos_x - mountains[i].width/2,
-                 mountains[i].pos_y + mountains[i].height/2,
-                 mountains[i].pos_x,
-                 mountains[i].pos_y - mountains[i].height/2,
-                 mountains[i].pos_x + mountains[i].width/2,
-                 mountains[i].pos_y + mountains[i].height/2
-                )
-        // fill(255,0,0);
-        // ellipse(mountains[i].pos_x,mountains[i].pos_y, 10, 10);
-    }
-}
-
 //keyboard function to control character
-function keyPressed()
-{
+function keyPressed() {
     if(keyCode == 37){
         isLeft = true;
 
@@ -435,8 +349,7 @@ function keyPressed()
     }
 }
 
-function keyReleased()
-{
+function keyReleased() {
     if(keyCode == 37){
         isLeft = false;
         
