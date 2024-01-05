@@ -22,7 +22,7 @@ function setup()
     createCanvas(windowWidth,windowHeight);
 
     floorPos_y = height * 7/8;
-    gameChar_x = width/3;
+    gameChar_x = 700;
     gameChar_y = floorPos_y;
     gameChar_width = 50;
     cameraPosx = 0;
