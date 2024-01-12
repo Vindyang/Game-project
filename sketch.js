@@ -1,4 +1,4 @@
-var char_x;
+var gameChar_x;
 var gameChar_y;
 var gameChar_width;
 var floorPos_y;
@@ -22,7 +22,7 @@ function setup()
     createCanvas(windowWidth,windowHeight);
 
     floorPos_y = height * 7/8;
-    char_x = 700;
+    gameChar_x = 700;
     gameChar_y = floorPos_y;
     gameChar_width = 50;
     cameraPosx = 0;
@@ -86,7 +86,7 @@ function setup()
 function draw()
 {
     //camera will stay center of the character
-    cameraPosx = char_x - width/2;
+    cameraPosx = gameChar_x - width/2;
 
     //fill the sky and backgrond blue
     background(255,197,197);
@@ -193,7 +193,7 @@ function draw()
     //detect any collectable near the character
     for(var i=0;i<collectables.length;i++) {
         var collectable = collectables[i];
-        var d = dist(char_x,gameChar_y,collectable.pos_x,collectable.pos_y);
+        var d = dist(gameChar_x,gameChar_y,collectable.pos_x,collectable.pos_y);
         if (d < 30) {
             collectable.isFound = true;
         }
@@ -206,9 +206,9 @@ function draw()
         //check if game character is over the canyon
         var con1 = gameChar_y == floorPos_y
         //check if the game character is from the left of the canyon
-        var con2 = char_x - gameChar_width/2>(canyon.x_pos);
+        var con2 = gameChar_x - gameChar_width/2>(canyon.x_pos);
         //check if the game character is from the right of the canyon 
-        var con3 = char_x + gameChar_width/2<(canyon.x_pos + canyon.width);
+        var con3 = gameChar_x + gameChar_width/2<(canyon.x_pos + canyon.width);
             //check if game character over the canyon
             if(con1 && con2 && con3) {
                 isPlummeting = true;
@@ -221,55 +221,55 @@ function draw()
         //jumping left
         stroke(100);
         fill(255,228,196);
-	    ellipse(char_x + 5, gameChar_y - 60, 20, 20); //head
+	    ellipse(gameChar_x + 5, gameChar_y - 60, 20, 20); //head
         fill(0,0,0);
-        ellipse(char_x + 2, gameChar_y - 65, 5, 5) //left eye
-        ellipse(char_x, gameChar_y - 58, 6, 6) //mouth
+        ellipse(gameChar_x + 2, gameChar_y - 65, 5, 5) //left eye
+        ellipse(gameChar_x, gameChar_y - 58, 6, 6) //mouth
         fill(255,228,196);
-        ellipse(char_x + 4, gameChar_y - 35, 35, 40) //body
-        ellipse(char_x + 8, gameChar_y - 55, 10, 30) //left arm
+        ellipse(gameChar_x + 4, gameChar_y - 35, 35, 40) //body
+        ellipse(gameChar_x + 8, gameChar_y - 55, 10, 30) //left arm
     }
     else if(isRight && isFalling) {
         //jumping right
         stroke(100); 
         fill(255,228,196);
-	    ellipse(char_x + 5, gameChar_y - 60, 20, 20); //head
+	    ellipse(gameChar_x + 5, gameChar_y - 60, 20, 20); //head
 	    fill(0,0,0);
-	    ellipse(char_x + 9, gameChar_y - 65, 5, 5); //right eye
-	    ellipse(char_x + 12, gameChar_y - 58, 6, 6); //mouth
+	    ellipse(gameChar_x + 9, gameChar_y - 65, 5, 5); //right eye
+	    ellipse(gameChar_x + 12, gameChar_y - 58, 6, 6); //mouth
 	    fill(255,228,196);
-	    ellipse(char_x + 5, gameChar_y - 35, 35, 40) //body
-	    ellipse(char_x + 3, gameChar_y - 55, 10, 30); //right arm
+	    ellipse(gameChar_x + 5, gameChar_y - 35, 35, 40) //body
+	    ellipse(gameChar_x + 3, gameChar_y - 55, 10, 30); //right arm
     }
     else if(isLeft) {
         //walking left
         stroke(100);
         fill(255,228,196);
-	    ellipse(char_x + 10, gameChar_y - 47, 20, 20); //head
+	    ellipse(gameChar_x + 10, gameChar_y - 47, 20, 20); //head
 	    fill(0,0,0);
-	    ellipse(char_x + 6, gameChar_y - 52, 5, 5); //eye
-	    line(char_x, gameChar_y - 45, char_x + 6, gameChar_y - 46); //mouth
+	    ellipse(gameChar_x + 6, gameChar_y - 52, 5, 5); //eye
+	    line(gameChar_x, gameChar_y - 45, gameChar_x + 6, gameChar_y - 46); //mouth
 	    fill(255,228,196);
-	    ellipse(char_x + 10, gameChar_y - 20, 25, 40); //body
-	    ellipse(char_x + 10, gameChar_y - 17, 10,30); //left arm
+	    ellipse(gameChar_x + 10, gameChar_y - 20, 25, 40); //body
+	    ellipse(gameChar_x + 10, gameChar_y - 17, 10,30); //left arm
     }
     else if(isRight) {
         //walking right
         stroke(100);
         fill(255,228,196);
-        ellipse(char_x - 10, gameChar_y - 47, 20, 20); //head
+        ellipse(gameChar_x - 10, gameChar_y - 47, 20, 20); //head
         fill(0,0,0);
-        ellipse(char_x - 6, gameChar_y - 52, 5, 5); //right eye
-        line(char_x - 1, gameChar_y - 45, char_x - 7, gameChar_y - 46); //mouth
+        ellipse(gameChar_x - 6, gameChar_y - 52, 5, 5); //right eye
+        line(gameChar_x - 1, gameChar_y - 45, gameChar_x - 7, gameChar_y - 46); //mouth
         fill(255,228,196);
-        ellipse(char_x - 10, gameChar_y - 20, 25, 40) //body
-        ellipse(char_x - 10, gameChar_y - 17, 10, 30); //right arm
+        ellipse(gameChar_x - 10, gameChar_y - 20, 25, 40) //body
+        ellipse(gameChar_x - 10, gameChar_y - 17, 10, 30); //right arm
     }
     else if(isFalling || isPlummeting) {
         //character jumps
         stroke(100);
         fill(255,228,196);
-	    ellipse(char_x, gameChar_y - 53, 20, 20); //head
+	    ellipse(gameChar_x, gameChar_y - 53, 20, 20); //head
 	    fill(0,0,0);
 	    ellipse(gameChar_x - 6, gameChar_y - 56, 5, 5); //left eye
 	    ellipse(gameChar_x + 6, gameChar_y - 56, 5, 5); //right eye
