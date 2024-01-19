@@ -28,7 +28,7 @@ function setup()
 
     //init lives
     lives = 3;
-    
+
     gameOver= false;
     //init  starting variable
     init();
@@ -38,11 +38,7 @@ function setup()
 function init()
 {
     floorPos_y = height * 7/8;
-<<<<<<< Updated upstream
     gameChar_x = 700;
-=======
-    gameChar_x = 500;
->>>>>>> Stashed changes
     gameChar_y = floorPos_y;
     gameChar_width = 50;
     cameraPosx = 0;
@@ -85,11 +81,7 @@ function draw()
 
     //camera position
     push();
-<<<<<<< Updated upstream
     translate(- cameraPosx, 0);
-=======
-    translate(-cameraPosx, 0);
->>>>>>> Stashed changes
 
     //draw the clouds
     animateClouds();
@@ -117,6 +109,15 @@ function draw()
     //check if game character is over the canyon
     charOverCanyon();
         
+    if(gameOver){
+        drawGameOver();
+        //set character back to starting point
+        gameChar_x = width/2;
+        gameChar_y = floorPos_y;
+        //draw the game cahr
+
+    }
+
     //game character
     if(isLeft && isFalling)
     {
@@ -207,8 +208,6 @@ function draw()
 	    ellipse(gameChar_x, gameChar_y - 20, 35, 35); //body
 	    ellipse(gameChar_x - 16, gameChar_y - 17, 10, 30); //left arm
 	    ellipse(gameChar_x + 16, gameChar_y - 17, 10,30); //right arm
-        // fill(255,0,0);
-	    // ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
 
     pop();
@@ -499,6 +498,7 @@ function reachFlagPole(){
         var d = dist(gameChar_x,gameChar_y,flagpole.x_pos,floorPos_y)
         if(d<10){
             flagpole.isReached=true;
+            gameOver = true;
         }
     }
 }
@@ -510,6 +510,8 @@ function gameCharLives(){
         //restart game if there's live
         if(lives>0){
             init();
+        } else {
+            gameOver = true
         }
     }
 }
@@ -519,6 +521,17 @@ function liveTokens(){
     fill(0);
     for(var i=0;i<lives;i++){
         rect(40*i+900,10,30,30);
+    }
+}
+
+function drawGameOver(){
+    fill(0);
+    textSize(100);
+    text("Game Over", 250, height/2-100);
+    if(lives>0){
+        text("You Win!", 300, height/2);
+    } else {
+        text("Your Lose!", 300,height/2);
     }
 }
 
