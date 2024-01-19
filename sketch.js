@@ -2,29 +2,47 @@ var gameChar_x;
 var gameChar_y;
 var gameChar_width;
 var floorPos_y;
+var game_score
 
 var isLeft;
 var isRight;
 
 var isFalling;
 var isPlummeting;
-var cameraPos_x;
+var cameraPosx;
 
 var collectables;
 var mountains;
 var hills;
 var clouds;
+var canyons;
 
+var flagpole;
+var lives;
+var gameOver;
 
 function setup()
 {
     //create canvas that fill in entire window
     createCanvas(windowWidth,windowHeight);
+
+    //init lives
+    lives = 3;
+    
+    gameOver= false;
+    //init  starting variable
+    init();
+
+}
+
+function init()
+{
     floorPos_y = height * 7/8;
-    gameChar_x = width/2;
+    gameChar_x = 700;
     gameChar_y = floorPos_y;
     gameChar_width = 50;
-    cameraPos_x = 0;
+    cameraPosx = 0;
+    game_score = 0;
     
     //initialise the value of these function to false
     isLeft = false;
@@ -38,15 +56,16 @@ function setup()
     setupHills();
     setupTrees();
     setupCollectables();
+    setupCanyons();    
 
-    canyon = {x_pos: 900, width: 120};
-    
+    //setup the flagpole
+    flagpole = {x_pos: 1700, isReached: false};
 }
 
 function draw()
 {
     //camera will stay center of the character
-    cameraPos_x = gameChar_x - width/2;
+    cameraPosx = gameChar_x - width/2;
 
     //fill the sky and backgrond blue
     background(255,197,197);
@@ -62,7 +81,7 @@ function draw()
 
     //camera position
     push();
-    translate(-cameraPos_x, 0);
+    translate(- cameraPosx, 0);
 
     //draw the clouds
     animateClouds();
@@ -82,10 +101,14 @@ function draw()
     //draw the collectable
     checkIfAnyCollectable();
     drawCollectable();
+
+    //draw the flagpole
+    drawFlagPole();
+    reachFlagPole();
     
     //check if game character is over the canyon
     charOverCanyon();
-
+        
     //game character
     if(isLeft && isFalling)
     {
@@ -161,8 +184,6 @@ function draw()
 	    ellipse(gameChar_x, gameChar_y - 28, 35, 40); //body
 	    ellipse(gameChar_x - 16, gameChar_y - 48, 10, 30); //left arm
 	    ellipse(gameChar_x + 16, gameChar_y - 48, 10,30); //right arm
-        // fill(255,0,0);
-	    // ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
     else 
     {
@@ -184,9 +205,16 @@ function draw()
 
     pop();
 
+    //write out the game score
+    drawGameScore();
+
+    //live token
+    liveTokens();
+
     /////INTERACTION CODE/////
     if(isPlummeting) {
         gameChar_y += 10;
+        gameCharLives();
         return;
     }
     if(gameChar_y < floorPos_y) {
@@ -213,22 +241,38 @@ function windowResized()
     resizeCanvas(windowWidth,windowHeight);
 }
 
+function setupCanyons()
+{
+    canyons = [
+        {x_pos: 370, width: 120},
+        {x_pos: 900, width: 120},
+        {x_pos: 1300, width: 120}
+    ]
+}
+
 function drawCanyon()
 {
-    fill(47,32,0,300);
-    rect(canyon.x_pos,floorPos_y,canyon.width,height-floorPos_y);
-    // fill(255,0,0);
-    // ellipse(canyon.x_pos,floorPos_y,10,10);
+    for(var i=0;i<canyons.length;i++) {
+        fill(47,32,0,300);
+        rect(canyons[i].x_pos,floorPos_y,canyons[i].width,height-floorPos_y)
+    }
 }
 
 //check if the character is over the canyon
 function charOverCanyon() {
-    //check if the game character on the floor
-    var con1 = gameChar_y == floorPos_y
-    //check if the game character is from the left of the canyon
-    var con2 = gameChar_x - gameChar_width/2>(canyon.x_pos);
-    //check if the game character is from the right of the canyon 
-    var con3 = gameChar_x + gameChar_width/2<(canyon.x_pos + canyon.width);
+    for(var i=0;i<canyons.length;i++) {
+        var canyon = canyons[i]
+        //check if game character is over the canyon
+        var con1 = gameChar_y == floorPos_y
+        //check if the game character is from the left of the canyon
+        var con2 = gameChar_x - gameChar_width/2>(canyon.x_pos);
+        //check if the game character is from the right of the canyon 
+        var con3 = gameChar_x + gameChar_width/2<(canyon.x_pos + canyon.width);
+            //check if game character over the canyon
+            if(con1 && con2 && con3) {
+                isPlummeting = true;
+            }
+        }
 
 
     //check if game character over the canyon
@@ -248,10 +292,14 @@ function setupCollectables() {
 
 //check if the character is in range of the collectable
 function ifCharInCollectableRange(collectables) {
-    var d = dist(gameChar_x,gameChar_y,collectables.pos_x,collectables.pos_y);
-    if (d < 30) {
-        collectables.isFound = true;
-    }
+    //check if any collectable has been collected
+    if(collectables.isFound==false){
+        var d = dist(gameChar_x,gameChar_y,collectables.pos_x,collectables.pos_y);
+        if (d < 30) {
+            collectables.isFound = true;
+            game_score++;
+        }
+    }    
 }
 
 //check if any collectable near the character
@@ -272,8 +320,6 @@ function drawCollectable() {
                     collectables[i].size,
                     collectables[i].size
                     );
-            // fill(255,0,0);
-            // ellipse(collectables[i].pos_x,collectables[i].pos_y,10,10);
         }
     }
 }
@@ -417,6 +463,54 @@ function drawMountains()
                 )
         // fill(255,0,0);
         // ellipse(mountains[i].pos_x,mountains[i].pos_y, 10, 10);
+    }
+}
+
+//function for gamescore
+function drawGameScore(){
+    fill(0);
+    textSize(30);
+    text("score : "+game_score,5,30);
+}
+
+//draw the flagpole
+function drawFlagPole(){
+    fill(125);
+    rect(flagpole.x_pos,floorPos_y-400,30,400);
+    fill(100);
+    if(flagpole.isReached) {
+        rect(flagpole.x_pos,floorPos_y-400,100,50);
+    } else {
+        rect(flagpole.x_pos,floorPos_y-50,100,50);
+    }
+}
+
+//check if the character reach the flagpole
+function reachFlagPole(){
+    if(flagpole.isReached==false){
+        var d = dist(gameChar_x,gameChar_y,flagpole.x_pos,floorPos_y)
+        if(d<10){
+            flagpole.isReached=true;
+        }
+    }
+}
+
+//check if the player is dead
+function gameCharLives(){
+    if(gameChar_y>height){
+        lives--;
+        //restart game if there's live
+        if(lives>0){
+            init();
+        }
+    }
+}
+
+//live token
+function liveTokens(){
+    fill(0);
+    for(var i=0;i<lives;i++){
+        rect(40*i+900,10,30,30);
     }
 }
 
