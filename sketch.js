@@ -38,7 +38,11 @@ function setup()
 function init()
 {
     floorPos_y = height * 7/8;
+<<<<<<< Updated upstream
     gameChar_x = 700;
+=======
+    gameChar_x = 500;
+>>>>>>> Stashed changes
     gameChar_y = floorPos_y;
     gameChar_width = 50;
     cameraPosx = 0;
@@ -81,7 +85,11 @@ function draw()
 
     //camera position
     push();
+<<<<<<< Updated upstream
     translate(- cameraPosx, 0);
+=======
+    translate(-cameraPosx, 0);
+>>>>>>> Stashed changes
 
     //draw the clouds
     animateClouds();
