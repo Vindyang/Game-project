@@ -16,6 +16,8 @@ var mountains;
 var hills;
 var clouds;
 var canyons;
+var platforms;
+var onPlatforms;
 
 var flagpole;
 var lives;
@@ -34,6 +36,9 @@ function setup()
     //init  starting variable
     init();
 
+    //create the platforms
+    platforms = [];
+    platforms.push(createPlatforms(150, floorPos_y - 100, 100));
 }
 
 function init()
@@ -50,6 +55,7 @@ function init()
     isRight = false;
     isFalling = false;
     isPlummeting = false;
+    onPlatform = false;
 
     //setup the properties of game background
     setupClouds();
@@ -57,7 +63,8 @@ function init()
     setupHills();
     setupTrees();
     setupCollectables();
-    setupCanyons();    
+    setupCanyons();
+    createPlatforms();    
 
     //setup the flagpole
     flagpole = {x_pos: 1700, isReached: false};
@@ -75,10 +82,6 @@ function draw()
     noStroke();
     fill(58, 77, 57)
     rect(0, floorPos_y, width, height - floorPos_y );
-
-    //draw the floor
-    // fill(177, 195, 129);
-    // rect(0,floorPos_y - 80, width, height - floorPos_y );
 
     //camera position
     push();
@@ -99,13 +102,20 @@ function draw()
     //draw the canyon
     drawCanyon();
 
-    //draw the collectable
+    //check if any collectable near the character
     checkIfAnyCollectable();
+
+    //draw the collectable
     drawCollectable();
 
     //draw the flagpole
     drawFlagPole();
+
+    //if character reach the flagpole
     reachFlagPole();
+
+    //draw the platforms
+    drawPlatforms();
     
     //check if game character is over the canyon
     charOverCanyon();
@@ -113,9 +123,8 @@ function draw()
     if(gameOver){
         drawGameOver();
         //set character back to starting point
-        gameChar_x = width/2;
+        gameChar_x = 700;
         gameChar_y = floorPos_y;
-        //draw the game cahr
 
     }
 
@@ -227,8 +236,20 @@ function draw()
         return;
     }
     if(gameChar_y < floorPos_y) {
+        var isContact = false;
+        for (var i = 0; i < platforms.length; i++)
+        {
+            if(platforms[i].checkContact(gameChar_x, gameChar_y) == true)
+            {
+                isContact = true;
+                break;
+            }
+        }
+        if (isContact == false)
+        {
         gameChar_y += 3;
         isFalling = true;
+        }
 
     } else {
         isFalling = false;
@@ -463,7 +484,7 @@ function setupMountains()
 //call the drawMountains
 function drawMountains()
 {
-    for(var i=0;i<mountains.length;i++)
+    for (var i=0;i<mountains.length;i++)
     {
         fill(255,235,216);
         triangle(mountains[i].pos_x - mountains[i].width/2,
@@ -478,15 +499,55 @@ function drawMountains()
     }
 }
 
+//draw the platforms
+function createPlatforms(x,y,length)
+{
+    var P = {
+        x: x,
+        y: y,
+        length: length,
+        draw: function() {
+            fill(255,0,0);
+            rect(this.x,this.y,this.length,10);
+        },
+        checkContact: function(gc_x, gc_y)
+        {
+            //check x-axis
+            if (gc_x + 30 > this.x && gc_x < this.x + 30 + this.length)
+            {
+                //check y-axis
+                var d = this.y - gc_y;
+                if(d >= 0 && d < 5)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    };
+    return P;
+}
+
+//draw the platforms
+function drawPlatforms()
+{
+    for (var i = 0; i < platforms.length; i++)
+    {
+        platforms[i].draw();
+    }
+}
+
 //function for gamescore
-function drawGameScore(){
+function drawGameScore()
+{
     fill(0);
     textSize(30);
     text("score : " + game_score,5,30);
 }
 
 //draw the flagpole
-function drawFlagPole(){
+function drawFlagPole()
+{
     fill(125);
     rect(flagpole.x_pos,floorPos_y-400,30,400);
     fill(100);
@@ -498,7 +559,8 @@ function drawFlagPole(){
 }
 
 //check if the character reach the flagpole
-function reachFlagPole(){
+function reachFlagPole()
+{
     if(flagpole.isReached==false){
         var d = dist(gameChar_x,gameChar_y,flagpole.x_pos,floorPos_y)
         if(d<10){
@@ -509,7 +571,8 @@ function reachFlagPole(){
 }
 
 //check if the player is dead
-function gameCharLives(){
+function gameCharLives()
+{
     if(gameChar_y>height){
         lives--;
         //restart game if there's live
@@ -522,7 +585,8 @@ function gameCharLives(){
 }
 
 //live token
-function liveTokens(){
+function liveTokens()
+{
     fill(0);
     for(var i=0;i<lives;i++){
         rect(40*i+1670,10,30,30);
@@ -530,7 +594,8 @@ function liveTokens(){
 }
 
 //draw the gameover letters on screen
-function drawGameOver(){
+function drawGameOver()
+{
     fill(0);
     textSize(100);
     text("Game Over", 250, height/2-100);
@@ -542,7 +607,8 @@ function drawGameOver(){
 }
 
 //load the audio file
-function preload(){
+function preload()
+{
     soundFormats("mp3");
     jumpSound = loadSound("assets/jump.mp3");
     collectSound = loadSound("assets/collect.mp3")
