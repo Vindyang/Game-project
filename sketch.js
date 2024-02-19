@@ -20,6 +20,7 @@ var canyons;
 var flagpole;
 var lives;
 var gameOver;
+var sound;
 
 function setup()
 {
@@ -215,21 +216,23 @@ function draw()
     //write out the game score
     drawGameScore();
 
-    //live token
+    //draw the live token function
     liveTokens();
 
     /////INTERACTION CODE/////
     if(isPlummeting) {
-        gameChar_y += 10;
+        gameChar_y += 4;
         gameCharLives();
+        fallSound.play();
         return;
     }
     if(gameChar_y < floorPos_y) {
-        gameChar_y += 1;
+        gameChar_y += 3;
         isFalling = true;
 
     } else {
         isFalling = false;
+        gameChar_y = floorPos_y
     }
 
     if(isLeft == true) {
@@ -275,6 +278,7 @@ function charOverCanyon() {
         var con2 = gameChar_x - gameChar_width/2>(canyon.x_pos);
         //check if the game character is from the right of the canyon 
         var con3 = gameChar_x + gameChar_width/2<(canyon.x_pos + canyon.width);
+        print(con1,con2,con3);
             //check if game character over the canyon
             if(con1 && con2 && con3) {
                 isPlummeting = true;
@@ -305,6 +309,7 @@ function ifCharInCollectableRange(collectables) {
         if (d < 30) {
             collectables.isFound = true;
             game_score++;
+            collectSound.play();
         }
     }    
 }
@@ -477,7 +482,7 @@ function drawMountains()
 function drawGameScore(){
     fill(0);
     textSize(30);
-    text("score : "+game_score,5,30);
+    text("score : " + game_score,5,30);
 }
 
 //draw the flagpole
@@ -520,10 +525,11 @@ function gameCharLives(){
 function liveTokens(){
     fill(0);
     for(var i=0;i<lives;i++){
-        rect(40*i+900,10,30,30);
+        rect(40*i+1670,10,30,30);
     }
 }
 
+//draw the gameover letters on screen
 function drawGameOver(){
     fill(0);
     textSize(100);
@@ -533,6 +539,15 @@ function drawGameOver(){
     } else {
         text("Your Lose!", 300,height/2);
     }
+}
+
+//load the audio file
+function preload(){
+    soundFormats("mp3");
+    jumpSound = loadSound("assets/jump.mp3");
+    collectSound = loadSound("assets/collect.mp3")
+    fallSound = loadSound("assets/falling.mp3")
+    sound.setVolume(0,1);
 }
 
 //keyboard function to control character
@@ -547,6 +562,7 @@ function keyPressed()
     } else if (keyCode == 38){
         if(gameChar_y >= floorPos_y)
         gameChar_y -= 100
+        jumpSound.play();
     }
 }
 
