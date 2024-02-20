@@ -20,6 +20,9 @@ var canyons;
 var platforms;
 var onPlatforms;
 
+var enemies;
+var damage;
+
 var flagpole;
 var lives;
 var gameOver;
@@ -41,6 +44,12 @@ function setup()
     platforms = [];
     platforms.push(createPlatforms(130, floorPos_y - 150, 150));
     platforms.push(createPlatforms(400, floorPos_y - 90, 150));
+    platforms.push(createPlatforms(900, floorPos_y - 110, 150));
+    platforms.push(createPlatforms(1200, floorPos_y - 130, 150));
+
+    //create the enemies
+    enemies = [];
+    enemies.push(Enemy(300, floorPos_y, 100, 100));
 }
 
 function init()
@@ -58,6 +67,7 @@ function init()
     isFalling = false;
     isPlummeting = false;
     onPlatforms = false;
+    damage = false;
 
     //setup the properties of game background
     setupClouds();
@@ -123,7 +133,13 @@ function draw()
     
     //check if game character is over the canyon
     charOverCanyon();
-        
+    
+    //check if the character is hit by enemy
+    checkEnemyContact();
+
+    //draw the enemy
+    drawEnemy();
+
     if(gameOver){
         drawGameOver();
         //set character back to starting point
@@ -259,6 +275,14 @@ function draw()
 
     pop();
 
+    let textSpeed = millis();
+
+    if(textSpeed < 7000){
+        fill(203, 156, 242);
+        textSize(32);
+        text("Collect 5 coins to win", windowWidth/7, 100);
+    }
+
     //write out the game score
     drawGameScore();
 
@@ -266,6 +290,11 @@ function draw()
     liveTokens();
 
     /////INTERACTION CODE/////
+    if(damage) {
+        fill(0);
+        textSize(50);
+        return;
+    }
     if(isPlummeting) {
         gameChar_y += 4;
         gameCharLives();
@@ -337,9 +366,12 @@ function charOverCanyon() {
 //function for collectables
 function setupCollectables() {
     collectables = [
-        {pos_x: 200, pos_y:floorPos_y - 25, size: 50, isFound: false},
-        {pos_x: 500, pos_y:floorPos_y - 25, size: 50, isFound: false},
-        {pos_x: 970, pos_y:floorPos_y - 50, size: 50, isFound: false}
+        {pos_x: 200, pos_y:floorPos_y - 180, size: 50, isFound: false},
+        {pos_x: 400, pos_y:floorPos_y - 130, size: 50, isFound: false},
+        {pos_x: 950, pos_y:floorPos_y - 140, size: 50, isFound: false},
+        {pos_x: 1300, pos_y:floorPos_y - 200, size: 50, isFound: false},
+        {pos_x: 1260, pos_y:floorPos_y - 40, size: 50, isFound: false},
+
     ]
 } 
 
@@ -348,7 +380,7 @@ function ifCharInCollectableRange(collectables) {
     //check if any collectable has been collected
     if(collectables.isFound==false){
         var d = dist(gameChar_x,gameChar_y,collectables.pos_x,collectables.pos_y);
-        if (d < 30) {
+        if (d < 50) {
             collectables.isFound = true;
             game_score++;
             collectSound.play();
@@ -566,9 +598,75 @@ function charOnPlat()
             }
         }
         if (!isContact) {
-            gameChar_y += 2;
+            gameChar_y += 5;
         } 
     }
+}
+
+//setup the enemy function
+function Enemy(x,y,range)
+{
+    var E = {
+        x: x,
+        y: y,
+        range: range,
+        currentX: x,
+        inc: 1,
+        update: function()
+        {
+            this.currentX += this.inc;
+            if(this.currentX > this.x + this.range)
+            {
+                this.inc = -1;
+            } else if (this.currentX < this.x)
+            {
+                this.inc = 1;
+            }
+        },
+        draw: function()
+        {
+            this.update();
+            fill(255,0,0);
+            ellipse(this.currentX,this.y,20,20);
+        },
+        checkContact: function(gc_x, gc_y)
+        {
+            var d = dist(gc_x,gc_y,this.currentX,this.y);
+            if(d < 20)
+            {
+                return true;
+            }
+            return false;
+        }
+    };
+    return E;
+}
+
+function drawEnemy()
+{
+    for (var i = 0; i < enemies.length; i++) {
+        enemies[i].draw();
+    }
+}
+
+function checkEnemyContact()
+{
+    if (damage) {
+        return;
+    }
+    for (var i = 0; i < enemies.length; i++) {
+        var isContact = enemies[i].checkContact(gameChar_x, gameChar_y);
+        if (isContact) {
+            lives--;
+            damage = true;
+            if (lives > 0) {
+                init();
+            } else {
+                gameOver = true;
+            }
+        
+        }
+        }
 }
 
 //function for gamescore
@@ -582,22 +680,17 @@ function drawGameScore()
 //draw the flagpole
 function drawFlagPole()
 {
-    fill(125);
-    rect(flagpole.x_pos,floorPos_y-400,30,400);
-    fill(100);
-    if(flagpole.isReached) {
-        rect(flagpole.x_pos,floorPos_y-400,100,50);
-    } else {
-        rect(flagpole.x_pos,floorPos_y-50,100,50);
-    }
+    fill(44,176,26);
+    rect(flagpole.x_pos,floorPos_y - 100,60,100);
+    rect(flagpole.x_pos + 60,floorPos_y - 88,1000,80);
 }
 
 //check if the character reach the flagpole
 function reachFlagPole()
 {
-    if(flagpole.isReached==false){
+    if(flagpole.isReached == false){
         var d = dist(gameChar_x,gameChar_y,flagpole.x_pos,floorPos_y)
-        if(d<10){
+        if(d < 5){
             flagpole.isReached=true;
             gameOver = true;
         }
@@ -632,11 +725,11 @@ function drawGameOver()
 {
     fill(0);
     textSize(100);
-    text("Game Over", 250, height/2-100);
+    text("Game Over", 300, height/2-100);
     if(lives>0){
         text("You Win!", 300, height/2);
     } else {
-        text("Your Lose!", 300,height/2);
+        text("You Lose!", 300,height/2);
     }
 }
 
@@ -660,7 +753,7 @@ function keyPressed()
 
     } else if (keyCode == 38){
         if(gameChar_y >= floorPos_y || onPlatforms) {
-            gameChar_y -= 150;
+            gameChar_y -= 200;
             jumpSound.play();
         }
     }
