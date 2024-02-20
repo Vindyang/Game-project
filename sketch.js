@@ -3,6 +3,7 @@ var gameChar_y;
 var gameChar_width;
 var floorPos_y;
 var game_score
+var gameChar_world_x
 
 var isLeft;
 var isRight;
@@ -38,7 +39,8 @@ function setup()
 
     //create the platforms
     platforms = [];
-    platforms.push(createPlatforms(150, floorPos_y - 100, 100));
+    platforms.push(createPlatforms(130, floorPos_y - 150, 150));
+    platforms.push(createPlatforms(400, floorPos_y - 90, 150));
 }
 
 function init()
@@ -55,7 +57,7 @@ function init()
     isRight = false;
     isFalling = false;
     isPlummeting = false;
-    onPlatform = false;
+    onPlatforms = false;
 
     //setup the properties of game background
     setupClouds();
@@ -116,6 +118,8 @@ function draw()
 
     //draw the platforms
     drawPlatforms();
+    //check if character is under the platform
+    charOnPlat();
     
     //check if game character is over the canyon
     charOverCanyon();
@@ -129,7 +133,33 @@ function draw()
     }
 
     //game character
-    if(isLeft && isFalling)
+    if (onPlatforms && isLeft) 
+    {
+        //walking left
+        stroke(100);
+        fill(255,228,196);
+	    ellipse(gameChar_x + 10, gameChar_y - 47, 20, 20); //head
+	    fill(0,0,0);
+	    ellipse(gameChar_x + 6, gameChar_y - 52, 5, 5); //eye
+	    line(gameChar_x, gameChar_y - 45, gameChar_x + 6, gameChar_y - 46); //mouth
+	    fill(255,228,196);
+	    ellipse(gameChar_x + 10, gameChar_y - 20, 25, 40); //body
+	    ellipse(gameChar_x + 10, gameChar_y - 17, 10,30); //left arm
+    }
+    else if (onPlatforms && isRight)
+    {
+        //walking right
+        stroke(100);
+        fill(255,228,196);
+        ellipse(gameChar_x - 10, gameChar_y - 47, 20, 20); //head
+        fill(0,0,0);
+        ellipse(gameChar_x - 6, gameChar_y - 52, 5, 5); //right eye
+        line(gameChar_x - 1, gameChar_y - 45, gameChar_x - 7, gameChar_y - 46); //mouth
+        fill(255,228,196);
+        ellipse(gameChar_x - 10, gameChar_y - 20, 25, 40) //body
+        ellipse(gameChar_x - 10, gameChar_y - 17, 10, 30); //right arm
+    }
+    else if(isLeft && isFalling)
     {
         //jumping left
         stroke(100);
@@ -141,8 +171,6 @@ function draw()
         fill(255,228,196);
         ellipse(gameChar_x + 4, gameChar_y - 35, 35, 40) //body
         ellipse(gameChar_x + 8, gameChar_y - 55, 10, 30) //left arm
-        // fill(255,0,0);
-	    // ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
     else if(isRight && isFalling)
     {
@@ -156,8 +184,6 @@ function draw()
 	    fill(255,228,196);
 	    ellipse(gameChar_x + 5, gameChar_y - 35, 35, 40) //body
 	    ellipse(gameChar_x + 3, gameChar_y - 55, 10, 30); //right arm
-        // fill(255,0,0);
-	    // ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
     else if(isLeft)
     {
@@ -171,8 +197,6 @@ function draw()
 	    fill(255,228,196);
 	    ellipse(gameChar_x + 10, gameChar_y - 20, 25, 40); //body
 	    ellipse(gameChar_x + 10, gameChar_y - 17, 10,30); //left arm
-        // fill(255,0,0);
-	    // ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
     }
     else if(isRight)
     {
@@ -186,8 +210,21 @@ function draw()
         fill(255,228,196);
         ellipse(gameChar_x - 10, gameChar_y - 20, 25, 40) //body
         ellipse(gameChar_x - 10, gameChar_y - 17, 10, 30); //right arm
-        // fill(255,0,0);
-	    // ellipse(gameChar_x, gameChar_y, 10, 10); //anchor point
+    }
+    else if (onPlatforms)
+    {
+        //character idle
+        stroke(100);
+        fill(255,228,196);
+	    ellipse(gameChar_x, gameChar_y - 43, 25,25); //head
+	    fill(0,0,0);
+	    ellipse(gameChar_x - 8, gameChar_y - 47, 5, 5); //left eye
+	    ellipse(gameChar_x + 8, gameChar_y - 47, 5, 5); //right eye
+	    line(gameChar_x - 5, gameChar_y - 43, gameChar_x + 5, gameChar_y - 40); //mouth
+	    fill(255,228,196);
+	    ellipse(gameChar_x, gameChar_y - 20, 35, 35); //body
+	    ellipse(gameChar_x - 16, gameChar_y - 17, 10, 30); //left arm
+	    ellipse(gameChar_x + 16, gameChar_y - 17, 10,30); //right arm
     }
     else if(isFalling || isPlummeting)
     {
@@ -236,20 +273,7 @@ function draw()
         return;
     }
     if(gameChar_y < floorPos_y) {
-        var isContact = false;
-        for (var i = 0; i < platforms.length; i++)
-        {
-            if(platforms[i].checkContact(gameChar_x, gameChar_y) == true)
-            {
-                isContact = true;
-                break;
-            }
-        }
-        if (isContact == false)
-        {
-        gameChar_y += 3;
         isFalling = true;
-        }
 
     } else {
         isFalling = false;
@@ -263,6 +287,8 @@ function draw()
         gameChar_x += 5;
     }
 
+    //Update real position of gameChar for collision detection.
+    gameChar_world_x = gameChar_x - cameraPosx;
 
 }
 
@@ -272,6 +298,7 @@ function windowResized()
     resizeCanvas(windowWidth,windowHeight);
 }
 
+//setup the canyons
 function setupCanyons()
 {
     canyons = [
@@ -281,6 +308,7 @@ function setupCanyons()
     ]
 }
 
+//draw the canyons
 function drawCanyon()
 {
     for(var i=0;i<canyons.length;i++) {
@@ -299,17 +327,10 @@ function charOverCanyon() {
         var con2 = gameChar_x - gameChar_width/2>(canyon.x_pos);
         //check if the game character is from the right of the canyon 
         var con3 = gameChar_x + gameChar_width/2<(canyon.x_pos + canyon.width);
-        print(con1,con2,con3);
             //check if game character over the canyon
             if(con1 && con2 && con3) {
                 isPlummeting = true;
             }
-        }
-
-
-    //check if game character over the canyon
-    if(con1 && con2 && con3) {
-        isPlummeting = true;
     }
 }
 
@@ -385,8 +406,6 @@ function drawClouds(cloudy) {
     ellipse(cloudy.pos_x,cloudy.pos_y,cloudy.size*1.5,cloudy.size*1.5)
     ellipse(cloudy.pos_x - 40,cloudy.pos_y,cloudy.size,cloudy.size)
     ellipse(cloudy.pos_x + 40,cloudy.pos_y,cloudy.size,cloudy.size)
-    // fill(255,0,0);
-    // ellipse(cloudy.pos_x,cloudy.pos_y,10,10);
 }
 
 //setup trees
@@ -435,8 +454,6 @@ function drawTrees()
                 trees[i].pos_x + 80,
                 trees[i].pos_y - 100
                 );
-        //fill(255,0,0);
-        //ellipse(trees[i].pos_x,trees[i].pos_y,10,10);
     }
 }
 
@@ -494,8 +511,6 @@ function drawMountains()
                  mountains[i].pos_x + mountains[i].width/2,
                  mountains[i].pos_y + mountains[i].height/2
                 )
-        // fill(255,0,0);
-        // ellipse(mountains[i].pos_x,mountains[i].pos_y, 10, 10);
     }
 }
 
@@ -507,17 +522,17 @@ function createPlatforms(x,y,length)
         y: y,
         length: length,
         draw: function() {
-            fill(255,0,0);
-            rect(this.x,this.y,this.length,10);
+            fill(136, 179, 128);
+            rect(this.x,this.y,this.length,20);
         },
         checkContact: function(gc_x, gc_y)
         {
             //check x-axis
-            if (gc_x + 30 > this.x && gc_x < this.x + 30 + this.length)
+            if (gc_x + 20 > this.x && gc_x < this.x + 20 + this.length)
             {
                 //check y-axis
                 var d = this.y - gc_y;
-                if(d >= 0 && d < 5)
+                if(d >= 0 && d < 1)
                 {
                     return true;
                 }
@@ -534,6 +549,25 @@ function drawPlatforms()
     for (var i = 0; i < platforms.length; i++)
     {
         platforms[i].draw();
+    }
+}
+
+//check if the character is on the platform
+function charOnPlat()
+{
+    if (isFalling) {
+        var isContact = false;
+        onPlatforms = false;
+        for (var i = 0; i < platforms.length; i++) {
+            isContact = platforms[i].checkContact(gameChar_x, gameChar_y);
+            if (isContact) {
+                onPlatforms = true;
+                break;
+            }
+        }
+        if (!isContact) {
+            gameChar_y += 2;
+        } 
     }
 }
 
@@ -613,7 +647,6 @@ function preload()
     jumpSound = loadSound("assets/jump.mp3");
     collectSound = loadSound("assets/collect.mp3")
     fallSound = loadSound("assets/falling.mp3")
-    sound.setVolume(0,1);
 }
 
 //keyboard function to control character
@@ -626,9 +659,10 @@ function keyPressed()
         isRight = true;
 
     } else if (keyCode == 38){
-        if(gameChar_y >= floorPos_y)
-        gameChar_y -= 100
-        jumpSound.play();
+        if(gameChar_y >= floorPos_y || onPlatforms) {
+            gameChar_y -= 150;
+            jumpSound.play();
+        }
     }
 }
 
