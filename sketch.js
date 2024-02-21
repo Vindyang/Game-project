@@ -42,10 +42,12 @@ function setup()
 
     //create the platforms
     platforms = [];
+    platforms.push(createPlatforms(-390, floorPos_y - 150, 150));
     platforms.push(createPlatforms(130, floorPos_y - 150, 150));
     platforms.push(createPlatforms(400, floorPos_y - 90, 150));
     platforms.push(createPlatforms(900, floorPos_y - 110, 150));
     platforms.push(createPlatforms(1200, floorPos_y - 130, 150));
+    platforms.push(createPlatforms(2090, floorPos_y - 130, 150));
 
     //create the enemies
     enemies = [];
@@ -55,7 +57,7 @@ function setup()
 function init()
 {
     floorPos_y = height * 7/8;
-    gameChar_x = 700;
+    gameChar_x = 800;
     gameChar_y = floorPos_y;
     gameChar_width = 50;
     cameraPosx = 0;
@@ -79,7 +81,7 @@ function init()
     createPlatforms();    
 
     //setup the flagpole
-    flagpole = {x_pos: 1700, isReached: false};
+    flagpole = {x_pos: 3000, isReached: false};
 }
 
 function draw()
@@ -278,9 +280,11 @@ function draw()
     let textSpeed = millis();
 
     if(textSpeed < 7000){
-        fill(203, 156, 242);
-        textSize(32);
-        text("Collect 5 coins to win", windowWidth/7, 100);
+        fill(40, 48, 68);
+        textSize(28);
+        text("Use arrow key to control the character", windowWidth/7, 100);
+        text("Collect as many coins as possible", windowWidth/7, 150);
+        text("Get to the flagpole to win", windowWidth/7, 200);
     }
 
     //write out the game score
@@ -331,9 +335,12 @@ function windowResized()
 function setupCanyons()
 {
     canyons = [
-        {x_pos: 370, width: 120},
-        {x_pos: 900, width: 120},
-        {x_pos: 1300, width: 120}
+        {x_pos: - 300, width: 100},
+        {x_pos: 200, width: 100},
+        {x_pos: 600, width: 100},
+        {x_pos: 1300, width: 100},
+        {x_pos: 1800, width: 100},
+        {x_pos: 2500, width: 100},
     ]
 }
 
@@ -366,12 +373,15 @@ function charOverCanyon() {
 //function for collectables
 function setupCollectables() {
     collectables = [
+        {pos_x: -480, pos_y:floorPos_y - 200, size: 50, isFound: false},
+        {pos_x: -100, pos_y:floorPos_y - 130, size: 50, isFound: false},
         {pos_x: 200, pos_y:floorPos_y - 180, size: 50, isFound: false},
-        {pos_x: 400, pos_y:floorPos_y - 130, size: 50, isFound: false},
         {pos_x: 950, pos_y:floorPos_y - 140, size: 50, isFound: false},
         {pos_x: 1300, pos_y:floorPos_y - 200, size: 50, isFound: false},
         {pos_x: 1260, pos_y:floorPos_y - 40, size: 50, isFound: false},
-
+        {pos_x: 1800, pos_y:floorPos_y - 190, size: 50, isFound: false},
+        {pos_x: 2290, pos_y:floorPos_y - 260, size: 50, isFound: false},
+        {pos_x: 2550, pos_y:floorPos_y - 30, size: 50, isFound: false},
     ]
 } 
 
@@ -444,16 +454,16 @@ function drawClouds(cloudy) {
 function setupTrees()
 {
     trees = 
-    [
-        {pos_x: 80,pos_y:floorPos_y - 50},
-        {pos_x: 200,pos_y:floorPos_y - 50},
-        {pos_x: 270,pos_y:floorPos_y - 50},
-        {pos_x: 500,pos_y:floorPos_y - 50},
-        {pos_x: 670,pos_y:floorPos_y - 50},
-        {pos_x: 770,pos_y:floorPos_y - 50},
-        {pos_x: 1230,pos_y:floorPos_y - 50},
-        {pos_x: 1350,pos_y:floorPos_y - 50}
-    ]
+    [];
+    //starting position of first tree
+    let startX = -1300;
+
+    for (var i = 0; i < 17; i++) {
+        trees.push({
+            pos_x: startX + i * 400, 
+            pos_y: floorPos_y - 50
+        });
+    }
 }
 
 //call the drawtrees function
@@ -494,10 +504,16 @@ function setupHills()
 {
     hills = 
     [
+        {pos_x: - 1010, pos_y:floorPos_y,height: 350,width: 780},
+        {pos_x: - 500, pos_y:floorPos_y,height: 300,width: 700},
         {pos_x: 0, pos_y:floorPos_y,height: 370,width: 680},
         {pos_x: 500,pos_y:floorPos_y,height: 400,width:700},
         {pos_x: 1000,pos_y:floorPos_y,height: 360,width:700},
-        {pos_x: 1500,pos_y:floorPos_y,height: 250,width: 600 }
+        {pos_x: 1500,pos_y:floorPos_y,height: 250,width: 600 },
+        {pos_x: 2000,pos_y:floorPos_y,height: 300,width: 700},
+        {pos_x: 2500,pos_y:floorPos_y,height: 400,width: 600},
+        {pos_x: 3000,pos_y:floorPos_y,height: 280,width: 750},
+        {pos_x: 3500,pos_y:floorPos_y,height: 350,width: 850},
     ]
 }
 
@@ -522,11 +538,21 @@ function setupMountains()
 {
     mountains = 
     [
+        {pos_x: - 1200,pos_y:floorPos_y - 225   ,height: 450,width: 800},
+        {pos_x: - 870,pos_y:floorPos_y - 250,height: 330,width: 500},
+        {pos_x: - 600,pos_y:floorPos_y - 150,height: 300,width: 600},
+        {pos_x: - 350,pos_y:floorPos_y - 300,height: 500,width: 450},
         {pos_x: 0,pos_y:floorPos_y - 200,height: 400,width: 600},
         {pos_x: 450,pos_y:floorPos_y - 270,height: 540,width: 800},
         {pos_x: 750,pos_y:floorPos_y - 275,height: 550,width: 400},
         {pos_x: 1050,pos_y:floorPos_y - 250,height: 500,width: 650},
-        {pos_x: 1500,pos_y:floorPos_y - 265,height: 530,width: 600}  
+        {pos_x: 1500,pos_y:floorPos_y - 265,height: 530,width: 600},
+        {pos_x: 1800,pos_y:floorPos_y - 300,height: 600,width: 500},
+        {pos_x: 2100,pos_y:floorPos_y - 250,height: 500,width: 700},
+        {pos_x: 2500,pos_y:floorPos_y - 200,height: 350,width: 600},
+        {pos_x: 3000,pos_y:floorPos_y - 300,height: 600,width: 800},
+        {pos_x: 3400,pos_y:floorPos_y - 150,height: 300,width: 300},
+        {pos_x: 3700,pos_y:floorPos_y - 250,height: 500,width: 700},  
     ];
 }
 
@@ -738,8 +764,11 @@ function preload()
 {
     soundFormats("mp3");
     jumpSound = loadSound("assets/jump.mp3");
+    jumpSound.setVolume(0.1);
     collectSound = loadSound("assets/collect.mp3")
+    collectSound.setVolume(0.1);
     fallSound = loadSound("assets/falling.mp3")
+    fallSound.setVolume(0.2);
 }
 
 //keyboard function to control character
