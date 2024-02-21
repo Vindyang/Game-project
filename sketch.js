@@ -51,13 +51,18 @@ function setup()
 
     //create the enemies
     enemies = [];
-    enemies.push(Enemy(300, floorPos_y, 100, 100));
+    enemies.push(Enemy(- 200, floorPos_y, 400));
+    enemies.push(Enemy(310, floorPos_y, 280));
+    enemies.push(Enemy(700, floorPos_y, 600));
+    enemies.push(Enemy(1410, floorPos_y, 390));
+    enemies.push(Enemy(1900, floorPos_y, 590));
+
 }
 
 function init()
 {
     floorPos_y = height * 7/8;
-    gameChar_x = 800;
+    gameChar_x = 1000;
     gameChar_y = floorPos_y;
     gameChar_width = 50;
     cameraPosx = 0;
@@ -323,6 +328,12 @@ function draw()
     //Update real position of gameChar for collision detection.
     gameChar_world_x = gameChar_x - cameraPosx;
 
+    //A helpful mouse pointer
+	push();
+    fill(0);
+    noStroke();
+    text(mouseX + "," + mouseY, mouseX,mouseY);
+
 }
 
 //resized when the window is resize
@@ -374,7 +385,7 @@ function charOverCanyon() {
 function setupCollectables() {
     collectables = [
         {pos_x: -480, pos_y:floorPos_y - 200, size: 50, isFound: false},
-        {pos_x: -100, pos_y:floorPos_y - 130, size: 50, isFound: false},
+        {pos_x: -100, pos_y:floorPos_y - 50, size: 50, isFound: false},
         {pos_x: 200, pos_y:floorPos_y - 180, size: 50, isFound: false},
         {pos_x: 950, pos_y:floorPos_y - 140, size: 50, isFound: false},
         {pos_x: 1300, pos_y:floorPos_y - 200, size: 50, isFound: false},
@@ -652,8 +663,22 @@ function Enemy(x,y,range)
         draw: function()
         {
             this.update();
-            fill(255,0,0);
-            ellipse(this.currentX,this.y,20,20);
+            //torso and hand
+            stroke(100)
+            fill(182, 70, 95);
+            ellipse(this.currentX,this.y - 45,20,20);
+            ellipse(this.currentX,this.y - 20,40,40);
+            ellipse(this.currentX - 23,this.y - 23,13,13);
+            ellipse(this.currentX + 23,this.y - 23,13,13);
+            //eyes
+            fill(0, 0, 0);
+            ellipse(this.currentX - 5,this.y - 50,5,5);
+            ellipse(this.currentX + 5,this.y - 50,5,5);
+            //spear
+            rect(this.currentX - 25,this.y - 60,5,60);
+            fill(192, 192, 192);
+            triangle(this.currentX - 40,this.y - 60,this.currentX - 5,this.y - 60,this.currentX - 22,this.y - 90);
+
         },
         checkContact: function(gc_x, gc_y)
         {
@@ -742,7 +767,23 @@ function liveTokens()
 {
     fill(0);
     for(var i=0;i<lives;i++){
-        rect(40*i+1670,10,30,30);
+        beginShape();
+        stroke(255, 0, 0);
+        fill(255, 0, 0);
+        // Top left curve
+        curveVertex(-40, -30);
+        curveVertex(-40, -30);
+        curveVertex(-80, -40);
+        curveVertex(-80, -80);
+        curveVertex(-40, -120);
+        curveVertex(0, -100);
+        // Top right curve
+        curveVertex(40, -120);
+        curveVertex(80, -80);
+        curveVertex(80, -40);
+        curveVertex(40, -30);
+        curveVertex(40, -30);
+        endShape(CLOSE);
     }
 }
 
