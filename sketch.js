@@ -62,7 +62,7 @@ function setup()
 function init()
 {
     floorPos_y = height * 7/8;
-    gameChar_x = 1000;
+    gameChar_x = 2900;
     gameChar_y = floorPos_y;
     gameChar_width = 50;
     cameraPosx = 0;
@@ -282,6 +282,7 @@ function draw()
 
     pop();
 
+    //instruction text
     let textSpeed = millis();
 
     if(textSpeed < 7000){
@@ -324,16 +325,6 @@ function draw()
     } else if(isRight == true) {
         gameChar_x += 5;
     }
-
-    //Update real position of gameChar for collision detection.
-    gameChar_world_x = gameChar_x - cameraPosx;
-
-    //A helpful mouse pointer
-	push();
-    fill(0);
-    noStroke();
-    text(mouseX + "," + mouseY, mouseX,mouseY);
-
 }
 
 //resized when the window is resize
@@ -767,35 +758,36 @@ function liveTokens()
 {
     fill(0);
     for(var i=0;i<lives;i++){
-        beginShape();
-        stroke(255, 0, 0);
-        fill(255, 0, 0);
-        // Top left curve
-        curveVertex(-40, -30);
-        curveVertex(-40, -30);
-        curveVertex(-80, -40);
-        curveVertex(-80, -80);
-        curveVertex(-40, -120);
-        curveVertex(0, -100);
-        // Top right curve
-        curveVertex(40, -120);
-        curveVertex(80, -80);
-        curveVertex(80, -40);
-        curveVertex(40, -30);
-        curveVertex(40, -30);
-        endShape(CLOSE);
+        drawHeart(50 * i + 1670, 30);
     }
 }
+
+function drawHeart(x, y) {
+    push();
+    translate(x, y);
+    fill(255, 0, 0);
+    noStroke();
+    beginShape();
+    vertex(0, -10);
+    bezierVertex(-22, -35, -22, 12, 0, 20);
+    bezierVertex(22, 12, 22, -35, 0, -10);
+    endShape(CLOSE);
+    pop();
+  }
 
 //draw the gameover letters on screen
 function drawGameOver()
 {
     fill(0);
-    textSize(100);
+    textSize(80);
     text("Game Over", 300, height/2-100);
     if(lives>0){
+        textSize(80);
         text("You Win!", 300, height/2);
+        textSize(30);
+        text("Your Score: " + game_score, 310, height/2 + 50);
     } else {
+        textSize(80);
         text("You Lose!", 300,height/2);
     }
 }
@@ -815,13 +807,13 @@ function preload()
 //keyboard function to control character
 function keyPressed()
 {
-    if(keyCode == 37){
+    if(keyCode == 37 || keyCode == 65){
         isLeft = true;
 
-    } else if (keyCode == 39){
+    } else if (keyCode == 39 || keyCode == 68){
         isRight = true;
 
-    } else if (keyCode == 38){
+    } else if (keyCode == 38 || keyCode == 32){
         if(gameChar_y >= floorPos_y || onPlatforms) {
             gameChar_y -= 200;
             jumpSound.play();
@@ -831,10 +823,10 @@ function keyPressed()
 
 function keyReleased()
 {
-    if(keyCode == 37){
+    if(keyCode == 37 || keyCode == 65){
         isLeft = false;
         
-    } else if (keyCode == 39){
+    } else if (keyCode == 39 || keyCode == 68){
         isRight = false;
     }
 }
