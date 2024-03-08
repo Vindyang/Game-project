@@ -27,6 +27,7 @@ var flagpole;
 var lives;
 var gameOver;
 var sound;
+var BGM
 
 function setup()
 {
@@ -62,7 +63,7 @@ function setup()
 function init()
 {
     floorPos_y = height * 7/8;
-    gameChar_x = 2900;
+    gameChar_x = 1000;
     gameChar_y = floorPos_y;
     gameChar_width = 50;
     cameraPosx = 0;
@@ -75,6 +76,7 @@ function init()
     isPlummeting = false;
     onPlatforms = false;
     damage = false;
+    BGM_sound = false;
 
     //setup the properties of game background
     setupClouds();
@@ -86,7 +88,8 @@ function init()
     createPlatforms();    
 
     //setup the flagpole
-    flagpole = {x_pos: 3000, isReached: false};
+    flagpole = {x_pos: 2950, isReached: false};
+
 }
 
 function draw()
@@ -150,7 +153,7 @@ function draw()
     if(gameOver){
         drawGameOver();
         //set character back to starting point
-        gameChar_x = 700;
+        gameChar_x = 1000;
         gameChar_y = floorPos_y;
 
     }
@@ -337,6 +340,7 @@ function windowResized()
 function setupCanyons()
 {
     canyons = [
+        {x_pos: - 1600, width: 1000},
         {x_pos: - 300, width: 100},
         {x_pos: 200, width: 100},
         {x_pos: 600, width: 100},
@@ -475,7 +479,7 @@ function drawTrees()
     {
         noStroke();
         //tree trunk
-        fill(185, 148, 112);
+        fill(185,148,112);
         rectMode(CENTER);
         rect(trees[i].pos_x,trees[i].pos_y,40,100);
         rectMode(CORNER);
@@ -684,6 +688,7 @@ function Enemy(x,y,range)
     return E;
 }
 
+//draw the enemy
 function drawEnemy()
 {
     for (var i = 0; i < enemies.length; i++) {
@@ -691,6 +696,7 @@ function drawEnemy()
     }
 }
 
+//check if the character is hit by enemy
 function checkEnemyContact()
 {
     if (damage) {
@@ -722,9 +728,20 @@ function drawGameScore()
 //draw the flagpole
 function drawFlagPole()
 {
-    fill(44,176,26);
-    rect(flagpole.x_pos,floorPos_y - 100,60,100);
-    rect(flagpole.x_pos + 60,floorPos_y - 88,1000,80);
+    fill(185,148,112);
+    rect(flagpole.x_pos + 25,floorPos_y - 10,50,10);
+    fill(143,188,143);
+    rect(flagpole.x_pos + 40,floorPos_y - 510,20,500);
+    fill(85,107,47);
+    ellipse(flagpole.x_pos + 50,floorPos_y - 525,40,40);
+    if(flagpole.isReached == false){
+    fill(255,255,255);
+    //flag down
+    triangle(flagpole.x_pos + 40,floorPos_y - 10,flagpole.x_pos - 80,floorPos_y - 60,flagpole.x_pos + 40,floorPos_y - 60);
+    } else {
+        //flag up
+        triangle(flagpole.x_pos + 40,floorPos_y - 505,flagpole.x_pos - 80,floorPos_y - 500,flagpole.x_pos + 40,floorPos_y - 450);
+    }
 }
 
 //check if the character reach the flagpole
@@ -762,6 +779,7 @@ function liveTokens()
     }
 }
 
+//draw the lives shape
 function drawHeart(x, y) {
     push();
     translate(x, y);
@@ -802,11 +820,18 @@ function preload()
     collectSound.setVolume(0.1);
     fallSound = loadSound("assets/falling.mp3")
     fallSound.setVolume(0.2);
+    BGM = loadSound("assets/background.mp3")
+    BGM.setVolume(0.5);
+
 }
 
 //keyboard function to control character
 function keyPressed()
 {
+    if(BGM_sound == false){
+        BGM.play();
+        BGM_sound = true;
+    }
     if(keyCode == 37 || keyCode == 65){
         isLeft = true;
 
