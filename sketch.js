@@ -153,7 +153,7 @@ function draw()
     if(gameOver){
         drawGameOver();
         //set character back to starting point
-        gameChar_x = 1000;
+        gameChar_x = 2950;
         gameChar_y = floorPos_y;
 
     }
@@ -797,16 +797,16 @@ function drawHeart(x, y) {
 function drawGameOver()
 {
     fill(0);
-    textSize(80);
-    text("Game Over", 300, height/2-100);
+    textSize(100);
+    text("Game Over", 2700, height/2-80);
     if(lives>0){
         textSize(80);
-        text("You Win!", 300, height/2);
+        text("You Win!", 2800, height/2);
         textSize(30);
-        text("Your Score: " + game_score, 310, height/2 + 50);
+        text("Your Score: " + game_score, 2820, height/2 + 50);
     } else {
         textSize(80);
-        text("You Lose!", 300,height/2);
+        text("You Lose!", 800,height/2);
     }
 }
 
@@ -814,14 +814,18 @@ function drawGameOver()
 function preload()
 {
     soundFormats("mp3");
+    //https://pixabay.com/sound-effects/cartoon-jump-6462/
     jumpSound = loadSound("assets/jump.mp3");
     jumpSound.setVolume(0.1);
+    //https://mixkit.co/free-sound-effects/game/?page=2
     collectSound = loadSound("assets/collect.mp3")
     collectSound.setVolume(0.1);
+    //https://mixkit.co/free-sound-effects/falling/
     fallSound = loadSound("assets/falling.mp3")
     fallSound.setVolume(0.2);
+    //https://www.fesliyanstudios.com/royalty-free-music/downloads-c/8-bit-music/6
     BGM = loadSound("assets/background.mp3")
-    BGM.setVolume(0.5);
+    BGM.setVolume(0.1);
 
 }
 
